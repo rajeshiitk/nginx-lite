@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <time.h>
 
 #include <ctype.h>
 
@@ -181,6 +182,16 @@ void debug(const char * format, ...);
    // free memory dynamically allocated by the proxy_parse library. 
    ParsedRequest_destroy(req);
 */
+
+
+
+// typedef struct cache_entry {
+//     char* data;
+//     int len;
+//     char* url;
+//     time_t timestamp;
+//     struct cache_entry* next;
+// } cache_entry;
 
 #endif
 

@@ -4,6 +4,7 @@
 */
 
 #include "proxy_parse.h"
+#include <string.h>
 
 #define DEFAULT_NHDRS 8
 #define MAX_REQ_LEN 65535
@@ -231,7 +232,8 @@ int ParsedHeader_parse(struct ParsedRequest * pr, char * line)
      char * index1;
      char * index2;
 
-     index1 = index(line, ':');
+     // index1 = index(line, ':');
+     index1 = strchr(line, ':');
      if(index1 == NULL)
      {
 	  debug("No colon found\n");
@@ -389,7 +391,10 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
      parse->buf[index-tmp_buf] = '\0';
 
      /* Parse request line */
-     parse->method = strtok_r(parse->buf, " ", &saveptr);
+     // change to strtok
+     // parse->method = strtok_r(parse->buf, " ", &saveptr);
+     parse->method = strtok(parse->buf, " ");
+
      if (parse->method == NULL) {
 	  debug( "invalid request line, no whitespace\n");
 	  free(tmp_buf);
@@ -405,8 +410,10 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
 	  parse->buf = NULL;
 	  return -1;
      }
-
-     full_addr = strtok_r(NULL, " ", &saveptr);
+  
+     // full_addr = strtok_r(NULL, " ", &saveptr);
+     // change 
+     full_addr = strtok(NULL, " ");
 
      if (full_addr == NULL) {
 	  debug( "invalid request line, no full address\n");
@@ -434,8 +441,11 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
 	  return -1;
      }
 
+  
+     // parse->protocol = strtok_r(full_addr, "://", &saveptr);
+     // change
 
-     parse->protocol = strtok_r(full_addr, "://", &saveptr);
+     parse->protocol = strtok(full_addr, "://");
      if (parse->protocol == NULL) {
 	  debug( "invalid request line, missing host\n");
 	  free(tmp_buf);
@@ -447,7 +457,9 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
      const char *rem = full_addr + strlen(parse->protocol) + strlen("://");
      size_t abs_uri_len = strlen(rem);
 
-     parse->host = strtok_r(NULL, "/", &saveptr);
+     // parse->host = strtok_r(NULL, "/", &saveptr);
+     // change
+     parse->host = strtok(NULL, "/");
      if (parse->host == NULL) {
 	  debug( "invalid request line, missing host\n");
 	  free(tmp_buf);
@@ -464,7 +476,9 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
 	  return -1;
      }
 
-     parse->path = strtok_r(NULL, " ", &saveptr);
+     // parse->path = strtok_r(NULL, " ", &saveptr);
+     // change
+     parse->path = strtok(NULL, " ");
      if (parse->path == NULL) {          // replace empty abs_path with "/"
 	  int rlen = strlen(root_abs_path);
 	  parse->path = (char *)malloc(rlen + 1);
@@ -487,8 +501,11 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
 	  strncpy(parse->path + rlen, tmp_path, plen + 1);
      }
 
-     parse->host = strtok_r(parse->host, ":", &saveptr);
-     parse->port = strtok_r(NULL, "/", &saveptr);
+     // parse->host = strtok_r(parse->host, ":", &saveptr);
+     // parse->port = strtok_r(NULL, "/", &saveptr);
+     // change
+     parse->host = strtok(parse->host, ":");
+     parse->port = strtok(NULL, "/");
 
      if (parse->host == NULL) {
 	  debug( "invalid request line, missing host\n");
